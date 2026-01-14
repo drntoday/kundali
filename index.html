@@ -94,7 +94,7 @@ async function suggestPlace(input,id){
  });
 }
 
-function f(x){return Number(x).toFixed(5);}
+function fmt(x){ return Number(x).toFixed(5); }
 
 async function singleKundali(){
  const name=document.getElementById("name").value;
@@ -103,13 +103,14 @@ async function singleKundali(){
  const tob=document.getElementById("tob").value;
  const place=document.getElementById("place").value;
  const g=places["place"];
- if(!name||!sex||!dob||!tob||!g){alert("Fill all fields");return;}
 
- const r=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
- const d=await r.json();
+ if(!name||!sex||!dob||!tob||!g){ alert("Fill all details"); return; }
 
- let txt = `
-ASTRONOMICAL VEDIC KUNDALI
+ const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
+ const d=await api.json();
+
+ let txt = 
+`ASTRONOMICAL KUNDALI
 Ephemeris: Swiss Ephemeris
 Ayanamsha: Lahiri
 
@@ -122,38 +123,22 @@ Place: ${place}
 Latitude: ${g.lat}
 Longitude: ${g.lon}
 
-ASTRONOMY
-Julian Day: ${f(d.astronomy.jd)}
-Julian Ephemeris Day: ${f(d.astronomy.jde)}
-Delta-T: ${f(d.astronomy.delta_t)}
-Sidereal Time: ${f(d.astronomy.sidereal_time)}
-Ayanamsha: ${f(d.astronomy.ayanamsha)}
+Astronomy:
+Julian Day: ${fmt(d.astronomy.jd)}
+Julian Ephemeris Day: ${fmt(d.astronomy.jde)}
+Delta-T: ${fmt(d.astronomy.delta_t)}
+Sidereal Time: ${fmt(d.astronomy.sidereal_time)}
+Ayanamsha: ${fmt(d.astronomy.ayanamsha)}
 
-LAGNA
-Degree: ${f(d.lagna.degree)}°
+Lagna:
+Degree: ${fmt(d.lagna.degree)}°
 Rashi: ${d.lagna.rashi}
 Nakshatra: ${d.lagna.nakshatra}
 Pada: ${d.lagna.pada}
-Navamsa: ${d.lagna.navamsa}
 
-BHAVAS (Parashara Whole Sign)
-`;
-
- for(let h in d.bhavas){
-   txt += `${h}: ${d.bhavas[h]}\n`;
- }
-
- txt += `
-PANCHANGA
-Tithi: ${d.panchanga.tithi}
-Paksha: ${d.panchanga.paksha}
-Vara: ${d.panchanga.vara}
-Yoga: ${d.panchanga.yoga}
-Karana: ${d.panchanga.karana}
-
-MOON SEED (Vimshottari)
+Moon Seed (Vimshottari):
 Nakshatra Index: ${d.moon_seed.nakshatra_index}
-Balance Fraction: ${f(d.moon_seed.balance_fraction)}
+Balance Fraction: ${fmt(d.moon_seed.balance_fraction)}
 
 PLANETS
 `;
@@ -162,14 +147,11 @@ PLANETS
    const P=d.planets[p];
    txt += `
 ${p}:
- Degree: ${f(P.degree)}°
- Latitude: ${f(P.latitude)}
+ Degree: ${fmt(P.degree)}°
  Rashi: ${P.rashi}
  Nakshatra: ${P.nakshatra}
  Pada: ${P.pada}
- Navamsa: ${P.navamsa}
- House: ${P.house}
- Speed: ${f(P.speed)}
+ Speed: ${fmt(P.speed)}
  Retrograde: ${P.retrograde}
 `;
  }
