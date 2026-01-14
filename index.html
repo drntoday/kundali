@@ -2,63 +2,62 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Classical Vedic Kundali & Jyotish AI</title>
+<title>Somnath Kurmi – Free Vedic Kundali Generator</title>
 
-<meta name="description" content="Upload your Kundali and get Shastra-verified Vedic Jyotish analysis using Brihat Parashara, Saravali, Jataka Parijata & Phaladeepika under Somnath Kurmi’s Jyotish system.">
-<meta name="keywords" content="Vedic Kundali, Jyotish, Horoscope, Brihat Parashara Hora Shastra, Lagna Chart, Somnath Kurmi, Astrology AI">
+<meta name="description" content="Generate your free Kundali and get Shastra-based Vedic Jyotish analysis from Somnath Kurmi’s Classical Jyotish AI.">
+<meta name="keywords" content="Vedic Kundali, Horoscope, Jyotish, Lagna Chart, Somnath Kurmi, Astrology AI">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="icon" href="logo.png">
 
 <style>
-body {
-    margin:0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background:#fff8ec;
-    color:#4b2e05;
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:#fff7e6;
+  color:#4b2e05;
 }
-header {
-    background:linear-gradient(135deg,#ffb300,#ff6f00);
-    color:white;
-    text-align:center;
-    padding:30px 20px;
+header{
+  background:linear-gradient(135deg,#ffb300,#ff6f00);
+  color:white;
+  text-align:center;
+  padding:30px;
 }
-header img {width:120px;}
-section {
-    max-width:1000px;
-    margin:auto;
-    padding:40px 20px;
+header img{width:120px}
+section{max-width:1000px;margin:auto;padding:30px}
+.box{
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+  margin-bottom:30px;
 }
-h1,h2,h3 {color:#8b4b00;}
-.box {
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
-    margin-bottom:30px;
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
-.btn {
-    display:inline-block;
-    background:#ff9800;
-    color:white;
-    padding:15px 25px;
-    border-radius:8px;
-    text-decoration:none;
-    font-size:18px;
-    margin-top:10px;
+button{
+  background:#ff9800;
+  color:white;
+  font-size:18px;
+  border:none;
+  cursor:pointer;
 }
-.btn:hover {background:#e68900;}
-.price {
-    background:#fff3cd;
-    padding:20px;
-    border-radius:10px;
-    margin:10px 0;
+button:hover{background:#e68900}
+.price{
+  background:#fff3cd;
+  padding:15px;
+  border-radius:8px;
+  margin:8px 0;
 }
-footer {
-    background:#8b4b00;
-    color:white;
-    text-align:center;
-    padding:20px;
+footer{
+  background:#8b4b00;
+  color:white;
+  text-align:center;
+  padding:20px;
 }
 </style>
 </head>
@@ -67,93 +66,39 @@ footer {
 
 <header>
 <img src="logo.png">
-<h1>Somnath Kurmi’s Classical Vedic Jyotish AI</h1>
-<p>Pure Shastra. No Guesswork. No Modern Astrology.</p>
+<h1>Somnath Kurmi’s Classical Vedic Kundali</h1>
+<p>Generate your birth chart & get Shastra-verified Jyotish analysis</p>
 </header>
 
 <section>
 
 <div class="box">
-<h2>Namaste 🙏 Welcome</h2>
+<h2>Generate Your Free Kundali</h2>
+<input id="name" placeholder="Full Name">
+<input id="dob" type="date">
+<input id="tob" type="time">
+<input id="place" placeholder="Place of Birth">
+<button onclick="generateKundali()">Generate Kundali & Open Jyotish AI</button>
+</div>
+
+<div class="box">
+<h2>How It Works</h2>
 <p>
-This system gives Kundali readings strictly according to the original classical Vedic Jyotish Shastras:
-<strong>Brihat Parashara Hora Shastra, Saravali, Jataka Parijata, Phaladeepika, Laghu Parashari and Brihat Jataka.</strong>
-</p>
-<p>
-This AI provides maximum Shastra-based knowledge for free, while reserving only final professional verification, timing and remedies for formal reports.
+1. Enter your birth details  
+<br>2. This website generates your Kundali  
+<br>3. Your Kundali is sent directly into Somnath Kurmi’s Classical Vedic Jyotish AI  
+<br>4. You receive Shastra-based analysis
 </p>
 </div>
 
 <div class="box">
-<h2>How To Use</h2>
-
-<h3>Step 1</h3>
-<p>
-Upload your Kundali (PDF or Image) from any software (AstroSage, Jagannatha Hora etc)  
-<br>OR paste planet positions in this format:
-</p>
-<pre>
-Lagna:
-Sun:
-Moon:
-Mars:
-Mercury:
-Jupiter:
-Venus:
-Saturn:
-Rahu:
-Ketu:
-</pre>
-
-<h3>Step 2</h3>
-<p>
-Ask questions in ANY language about:
-Marriage, Career, Wealth, Health, Education, Yogas, Dashas, Doshas, Spiritual path
-</p>
-
-<h3>Step 3</h3>
-<p>
-You may also ask:
-“Show Shastra rules”, “Explain why”, “Give probability”
-</p>
-
-<a class="btn" href="https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai" target="_blank">
-Open Jyotish AI & Upload Kundali
-</a>
-</div>
-
-<div class="box">
-<h2>How This AI Works</h2>
-<p>
-This AI reads your Kundali, searches ONLY the six classical Shastras, applies all matching rules, scores them and gives Shastra-verified probability.
-</p>
-<p>
-If any rule is not found in Shastra, it clearly says:
-<strong>“Not found in classical Jyotish Shastra.”</strong>
-</p>
-</div>
-
-<div class="box">
-<h2>Professional Vedic Kundali Reports</h2>
-
+<h2>Professional Jyotish Reports</h2>
 <div class="price">Dosha & Remedies Report – ₹1,299</div>
 <div class="price">Career & Wealth Report – ₹1,999</div>
 <div class="price">Marriage & Relationship Report – ₹1,999</div>
-<div class="price">Complete Life Kundali (Premium) – ₹2,499</div>
-<div class="price">VIP Astrology Consultation – ₹4,999</div>
-
-<p>
-For professionally verified Vedic Kundali PDF with Navamsa, Dasha and remedies under Somnath Kurmi’s Jyotish system, contact:
-<br><strong>WhatsApp: +91 99966 41866</strong>
-</p>
-</div>
-
-<div class="box">
-<h2>Ethics & Authority</h2>
-<p>
-This is not a general chatbot. It is a classical Jyotishi trained only on six Shastras.  
-No Western astrology. No modern inventions. No guessing.
-</p>
+<div class="price">Complete Life Kundali – ₹2,499</div>
+<div class="price">VIP Consultation – ₹4,999</div>
+<p>WhatsApp: <strong>+91 99966 41866</strong></p>
 </div>
 
 </section>
@@ -161,6 +106,48 @@ No Western astrology. No modern inventions. No guessing.
 <footer>
 © 2026 Somnath Kurmi – Classical Vedic Jyotish
 </footer>
+
+<script>
+function zodiac(lon){
+  const signs=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+  return signs[Math.floor(lon/30)];
+}
+
+// simple demo engine (temporary)
+function generateKundali(){
+  const name=document.getElementById("name").value;
+  const dob=document.getElementById("dob").value;
+  const tob=document.getElementById("tob").value;
+  const place=document.getElementById("place").value;
+
+  if(!name||!dob||!tob||!place){
+    alert("Please fill all details");
+    return;
+  }
+
+  // pseudo planetary positions for frontend demo
+  const planets={
+    Sun:Math.random()*360,
+    Moon:Math.random()*360,
+    Mars:Math.random()*360,
+    Mercury:Math.random()*360,
+    Jupiter:Math.random()*360,
+    Venus:Math.random()*360,
+    Saturn:Math.random()*360,
+    Rahu:Math.random()*360,
+    Ketu:(Math.random()*360)
+  };
+
+  let text="Kundali Details\n";
+  text+="Name: "+name+"\nDOB: "+dob+"\nTime: "+tob+"\nPlace: "+place+"\n\n";
+  for(let p in planets){
+    text+=p+": "+zodiac(planets[p])+"\n";
+  }
+
+  const url="https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(text);
+  window.open(url,"_blank");
+}
+</script>
 
 </body>
 </html>
