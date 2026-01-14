@@ -79,14 +79,15 @@ footer{
 <input id="tob" type="time">
 <input id="place" placeholder="Place of Birth">
 <button onclick="generateKundali()">Generate Kundali & Open Jyotish AI</button>
+<p id="status"></p>
 </div>
 
 <div class="box">
 <h2>How It Works</h2>
 <p>
 1. Enter your birth details  
-<br>2. This website generates your Kundali  
-<br>3. Your Kundali is sent directly into Somnath Kurmi’s Classical Vedic Jyotish AI  
+<br>2. Real Swiss-Ephemeris calculates your planets  
+<br>3. Your Kundali is sent directly into Somnath Kurmi’s Classical Jyotish AI  
 <br>4. You receive Shastra-based analysis
 </p>
 </div>
@@ -108,40 +109,43 @@ footer{
 </footer>
 
 <script>
-function zodiac(lon){
-  const signs=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
-  return signs[Math.floor(lon/30)];
-}
+async function generateKundali(){
 
-// simple demo engine (temporary)
-function generateKundali(){
   const name=document.getElementById("name").value;
   const dob=document.getElementById("dob").value;
   const tob=document.getElementById("tob").value;
   const place=document.getElementById("place").value;
+  const status=document.getElementById("status");
 
   if(!name||!dob||!tob||!place){
     alert("Please fill all details");
     return;
   }
 
-  // pseudo planetary positions for frontend demo
-  const planets={
-    Sun:Math.random()*360,
-    Moon:Math.random()*360,
-    Mars:Math.random()*360,
-    Mercury:Math.random()*360,
-    Jupiter:Math.random()*360,
-    Venus:Math.random()*360,
-    Saturn:Math.random()*360,
-    Rahu:Math.random()*360,
-    Ketu:(Math.random()*360)
-  };
+  status.innerHTML="Finding birthplace…";
 
-  let text="Kundali Details\n";
-  text+="Name: "+name+"\nDOB: "+dob+"\nTime: "+tob+"\nPlace: "+place+"\n\n";
-  for(let p in planets){
-    text+=p+": "+zodiac(planets[p])+"\n";
+  // get latitude longitude from OpenStreetMap
+  const geo = await fetch("https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(place));
+  const geoData = await geo.json();
+  if(!geoData[0]){
+    alert("Place not found");
+    return;
+  }
+  const lat = geoData[0].lat;
+  const lon = geoData[0].lon;
+
+  status.innerHTML="Calculating planets using Swiss Ephemeris…";
+
+  // call your real Kundali engine
+  const api = await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${lat}&lon=${lon}`);
+  const data = await api.json();
+
+  let text="Classical Vedic Kundali\n";
+  text+="Name: "+name+"\n";
+  text+="DOB: "+dob+"\nTime: "+tob+"\nPlace: "+place+"\n\n";
+
+  for(let p in data){
+    text+=p+": "+data[p].rashi+" ("+data[p].degree.toFixed(2)+"°)\n";
   }
 
   const url="https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(text);
