@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Somnath Kurmi – Vedic Kundali & Matching</title>
-
-<meta name="description" content="Generate Vedic Kundali and Kundali Matching using Swiss Ephemeris and get Shastra-based analysis from Somnath Kurmi’s Classical Jyotish AI.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="icon" href="logo.png">
 
 <style>
-body{margin:0;font-family:Segoe UI,Arial;background:#fff7e6;color:#4b2e05}
+body{font-family:Segoe UI;background:#fff7e6;margin:0;color:#4b2e05}
 header{background:linear-gradient(135deg,#ffb300,#ff6f00);color:white;text-align:center;padding:30px}
 header img{width:120px}
 section{max-width:1100px;margin:auto;padding:30px}
@@ -18,7 +15,10 @@ section{max-width:1100px;margin:auto;padding:30px}
 input,select,button{width:100%;padding:12px;margin-top:10px;border-radius:6px;border:1px solid #ccc}
 button{background:#ff9800;color:white;font-size:18px;border:none;cursor:pointer}
 button:hover{background:#e68900}
-h2{color:#8b4b00}
+.suggest{background:white;border:1px solid #ccc;max-height:150px;overflow:auto;position:absolute;z-index:10}
+.suggest div{padding:8px;cursor:pointer}
+.suggest div:hover{background:#ffe0b2}
+.field{position:relative}
 </style>
 </head>
 
@@ -27,103 +27,97 @@ h2{color:#8b4b00}
 <header>
 <img src="logo.png">
 <h1>Somnath Kurmi’s Classical Vedic Jyotish</h1>
-<p>Kundali • Matching • Shastra-Verified AI</p>
+<p>Kundali • Matching • Shastra-Verified</p>
 </header>
 
 <section>
 
-<!-- SINGLE KUNDALI -->
 <div class="box">
 <h2>Generate Your Kundali</h2>
 <input id="name" placeholder="Full Name">
 <select id="sex">
-  <option value="">Select Gender</option>
-  <option>Male</option>
-  <option>Female</option>
+<option value="">Gender</option><option>Male</option><option>Female</option>
 </select>
 <input id="dob" type="date">
 <input id="tob" type="time">
-<input id="place" placeholder="Place of Birth">
-<button onclick="singleKundali()">Generate Kundali & Open Jyotish AI</button>
-<p id="sstatus"></p>
+<div class="field">
+<input id="place" placeholder="Place of Birth" oninput="suggestPlace(this,'sp')">
+<div id="sp" class="suggest"></div>
+</div>
+<button onclick="singleKundali()">Generate Kundali</button>
 </div>
 
-<!-- MATCHING -->
 <div class="box">
-<h2>Kundali Matching (Marriage)</h2>
+<h2>Kundali Matching</h2>
 
 <h3>Boy</h3>
 <input id="bname" placeholder="Boy Name">
 <input id="bdob" type="date">
 <input id="btob" type="time">
-<input id="bplace" placeholder="Boy Birth Place">
+<div class="field">
+<input id="bplace" placeholder="Boy Place" oninput="suggestPlace(this,'bp')">
+<div id="bp" class="suggest"></div>
+</div>
 
 <h3>Girl</h3>
 <input id="gname" placeholder="Girl Name">
 <input id="gdob" type="date">
 <input id="gtob" type="time">
-<input id="gplace" placeholder="Girl Birth Place">
+<div class="field">
+<input id="gplace" placeholder="Girl Place" oninput="suggestPlace(this,'gp')">
+<div id="gp" class="suggest"></div>
+</div>
 
-<button onclick="matchKundali()">Match Kundali & Open Jyotish AI</button>
-<p id="mstatus"></p>
+<button onclick="matchKundali()">Match Kundali</button>
 </div>
 
 </section>
 
 <script>
-async function geo(place){
-  const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(place));
-  const d=await r.json();
-  return {lat:d[0].lat, lon:d[0].lon};
+let places={};
+
+async function suggestPlace(input,id){
+ if(input.value.length<3) return;
+ const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&q="+input.value);
+ const d=await r.json();
+ const box=document.getElementById(id);
+ box.innerHTML="";
+ d.forEach(p=>{
+  const div=document.createElement("div");
+  div.innerText=p.display_name;
+  div.onclick=()=>{
+    input.value=p.display_name;
+    places[input.id]={lat:p.lat,lon:p.lon};
+    box.innerHTML="";
+  }
+  box.appendChild(div);
+ });
 }
 
 async function singleKundali(){
-  const name=nameEl.value=document.getElementById("name").value;
-  const sex=document.getElementById("sex").value;
-  const dob=document.getElementById("dob").value;
-  const tob=document.getElementById("tob").value;
-  const place=document.getElementById("place").value;
-  const s=document.getElementById("sstatus");
+ const name=nameEl.value=document.getElementById("name").value;
+ const sex=document.getElementById("sex").value;
+ const dob=document.getElementById("dob").value;
+ const tob=document.getElementById("tob").value;
+ const place=document.getElementById("place").value;
 
-  if(!name||!sex||!dob||!tob||!place){alert("Fill all fields");return;}
+ const g=places["place"];
+ const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
+ const d=await api.json();
 
-  s.innerHTML="Finding location…";
-  const g=await geo(place);
+ let txt=`Name:${name}\nGender:${sex}\nDOB:${dob}\nTime:${tob}\nPlace:${place}\n\n`;
+ for(let p in d) txt+=`${p}: ${d[p].rashi} ${d[p].nakshatra}\n`;
 
-  s.innerHTML="Calculating planets…";
-  const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
-  const d=await api.json();
-
-  let txt="Kundali\nName:"+name+"\nGender:"+sex+"\nDOB:"+dob+"\nTime:"+tob+"\nPlace:"+place+"\n\n";
-  for(let p in d){txt+=p+": "+d[p].rashi+" ("+d[p].nakshatra+")\n";}
-
-  window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
+ window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
 }
 
 async function matchKundali(){
-  const bname=document.getElementById("bname").value;
-  const bdob=document.getElementById("bdob").value;
-  const btob=document.getElementById("btob").value;
-  const bplace=document.getElementById("bplace").value;
+ const b=places["bplace"], g=places["gplace"];
+ const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bdob.value}&b_tob=${btob.value}&b_lat=${b.lat}&b_lon=${b.lon}&g_dob=${gdob.value}&g_tob=${gtob.value}&g_lat=${g.lat}&g_lon=${g.lon}`);
+ const d=await api.json();
 
-  const gname=document.getElementById("gname").value;
-  const gdob=document.getElementById("gdob").value;
-  const gtob=document.getElementById("gtob").value;
-  const gplace=document.getElementById("gplace").value;
-
-  if(!bname||!bdob||!btob||!bplace||!gname||!gdob||!gtob||!gplace){
-    alert("Fill all matching details");return;
-  }
-
-  const bs=await geo(bplace);
-  const gs=await geo(gplace);
-
-  const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bdob}&b_tob=${btob}&b_lat=${bs.lat}&b_lon=${bs.lon}&g_dob=${gdob}&g_tob=${gtob}&g_lat=${gs.lat}&g_lon=${gs.lon}`);
-  const d=await api.json();
-
-  let txt="Kundali Matching\n\nBoy:"+bname+"\nGirl:"+gname+"\n\nBoy Moon:"+d.boy.Moon.rashi+" "+d.boy.Moon.nakshatra+"\nGirl Moon:"+d.girl.Moon.rashi+" "+d.girl.Moon.nakshatra+"\n\nGuna Score:"+d.guna_score+"\nResult:"+d.result;
-
-  window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
+ let txt=`Boy Moon:${d.boy.Moon.nakshatra}\nGirl Moon:${d.girl.Moon.nakshatra}\nGuna:${d.guna_score}\nResult:${d.result}`;
+ window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
 }
 </script>
 
