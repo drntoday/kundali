@@ -94,29 +94,68 @@ async function suggestPlace(input,id){
  });
 }
 
+function fmt(x){ return Number(x).toFixed(5); }
+
 async function singleKundali(){
- const name = document.getElementById("name").value;
+ const name=document.getElementById("name").value;
  const sex=document.getElementById("sex").value;
  const dob=document.getElementById("dob").value;
  const tob=document.getElementById("tob").value;
  const place=document.getElementById("place").value;
-
  const g=places["place"];
+
+ if(!name||!sex||!dob||!tob||!g){ alert("Fill all details"); return; }
+
  const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
  const d=await api.json();
 
- let txt=`Name:${name}\nGender:${sex}\nDOB:${dob}\nTime:${tob}\nPlace:${place}\n\n`;
- for(let p in d) txt+=`${p}: ${d[p].rashi} ${d[p].nakshatra}\n`;
+ let txt = 
+`ASTRONOMICAL KUNDALI
+Ephemeris: Swiss Ephemeris
+Ayanamsha: Lahiri
 
- window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
-}
+Birth:
+Name: ${name}
+Gender: ${sex}
+DOB: ${dob}
+Time: ${tob}
+Place: ${place}
+Latitude: ${g.lat}
+Longitude: ${g.lon}
 
-async function matchKundali(){
- const b=places["bplace"], g=places["gplace"];
- const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bdob.value}&b_tob=${btob.value}&b_lat=${b.lat}&b_lon=${b.lon}&g_dob=${gdob.value}&g_tob=${gtob.value}&g_lat=${g.lat}&g_lon=${g.lon}`);
- const d=await api.json();
+Astronomy:
+Julian Day: ${fmt(d.astronomy.jd)}
+Julian Ephemeris Day: ${fmt(d.astronomy.jde)}
+Delta-T: ${fmt(d.astronomy.delta_t)}
+Sidereal Time: ${fmt(d.astronomy.sidereal_time)}
+Ayanamsha: ${fmt(d.astronomy.ayanamsha)}
 
- let txt=`Boy Moon:${d.boy.Moon.nakshatra}\nGirl Moon:${d.girl.Moon.nakshatra}\nGuna:${d.guna_score}\nResult:${d.result}`;
+Lagna:
+Degree: ${fmt(d.lagna.degree)}°
+Rashi: ${d.lagna.rashi}
+Nakshatra: ${d.lagna.nakshatra}
+Pada: ${d.lagna.pada}
+
+Moon Seed (Vimshottari):
+Nakshatra Index: ${d.moon_seed.nakshatra_index}
+Balance Fraction: ${fmt(d.moon_seed.balance_fraction)}
+
+PLANETS
+`;
+
+ for(let p in d.planets){
+   const P=d.planets[p];
+   txt += `
+${p}:
+ Degree: ${fmt(P.degree)}°
+ Rashi: ${P.rashi}
+ Nakshatra: ${P.nakshatra}
+ Pada: ${P.pada}
+ Speed: ${fmt(P.speed)}
+ Retrograde: ${P.retrograde}
+`;
+ }
+
  window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
 }
 </script>
