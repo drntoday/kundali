@@ -2,63 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Somnath Kurmi – Free Vedic Kundali Generator</title>
+<title>Somnath Kurmi – Vedic Kundali & Matching</title>
 
-<meta name="description" content="Generate your free Kundali and get Shastra-based Vedic Jyotish analysis from Somnath Kurmi’s Classical Jyotish AI.">
-<meta name="keywords" content="Vedic Kundali, Horoscope, Jyotish, Lagna Chart, Somnath Kurmi, Astrology AI">
+<meta name="description" content="Generate Vedic Kundali and Kundali Matching using Swiss Ephemeris and get Shastra-based analysis from Somnath Kurmi’s Classical Jyotish AI.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="icon" href="logo.png">
 
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI,Arial;
-  background:#fff7e6;
-  color:#4b2e05;
-}
-header{
-  background:linear-gradient(135deg,#ffb300,#ff6f00);
-  color:white;
-  text-align:center;
-  padding:30px;
-}
+body{margin:0;font-family:Segoe UI,Arial;background:#fff7e6;color:#4b2e05}
+header{background:linear-gradient(135deg,#ffb300,#ff6f00);color:white;text-align:center;padding:30px}
 header img{width:120px}
-section{max-width:1000px;margin:auto;padding:30px}
-.box{
-  background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 0 15px rgba(0,0,0,0.1);
-  margin-bottom:30px;
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-button{
-  background:#ff9800;
-  color:white;
-  font-size:18px;
-  border:none;
-  cursor:pointer;
-}
+section{max-width:1100px;margin:auto;padding:30px}
+.box{background:white;padding:25px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.1);margin-bottom:30px}
+input,select,button{width:100%;padding:12px;margin-top:10px;border-radius:6px;border:1px solid #ccc}
+button{background:#ff9800;color:white;font-size:18px;border:none;cursor:pointer}
 button:hover{background:#e68900}
-.price{
-  background:#fff3cd;
-  padding:15px;
-  border-radius:8px;
-  margin:8px 0;
-}
-footer{
-  background:#8b4b00;
-  color:white;
-  text-align:center;
-  padding:20px;
-}
+h2{color:#8b4b00}
 </style>
 </head>
 
@@ -66,90 +26,104 @@ footer{
 
 <header>
 <img src="logo.png">
-<h1>Somnath Kurmi’s Classical Vedic Kundali</h1>
-<p>Generate your birth chart & get Shastra-verified Jyotish analysis</p>
+<h1>Somnath Kurmi’s Classical Vedic Jyotish</h1>
+<p>Kundali • Matching • Shastra-Verified AI</p>
 </header>
 
 <section>
 
+<!-- SINGLE KUNDALI -->
 <div class="box">
-<h2>Generate Your Free Kundali</h2>
+<h2>Generate Your Kundali</h2>
 <input id="name" placeholder="Full Name">
+<select id="sex">
+  <option value="">Select Gender</option>
+  <option>Male</option>
+  <option>Female</option>
+</select>
 <input id="dob" type="date">
 <input id="tob" type="time">
 <input id="place" placeholder="Place of Birth">
-<button onclick="generateKundali()">Generate Kundali & Open Jyotish AI</button>
-<p id="status"></p>
+<button onclick="singleKundali()">Generate Kundali & Open Jyotish AI</button>
+<p id="sstatus"></p>
 </div>
 
+<!-- MATCHING -->
 <div class="box">
-<h2>How It Works</h2>
-<p>
-1. Enter your birth details  
-<br>2. Real Swiss-Ephemeris calculates your planets  
-<br>3. Your Kundali is sent directly into Somnath Kurmi’s Classical Jyotish AI  
-<br>4. You receive Shastra-based analysis
-</p>
-</div>
+<h2>Kundali Matching (Marriage)</h2>
 
-<div class="box">
-<h2>Professional Jyotish Reports</h2>
-<div class="price">Dosha & Remedies Report – ₹1,299</div>
-<div class="price">Career & Wealth Report – ₹1,999</div>
-<div class="price">Marriage & Relationship Report – ₹1,999</div>
-<div class="price">Complete Life Kundali – ₹2,499</div>
-<div class="price">VIP Consultation – ₹4,999</div>
-<p>WhatsApp: <strong>+91 99966 41866</strong></p>
+<h3>Boy</h3>
+<input id="bname" placeholder="Boy Name">
+<input id="bdob" type="date">
+<input id="btob" type="time">
+<input id="bplace" placeholder="Boy Birth Place">
+
+<h3>Girl</h3>
+<input id="gname" placeholder="Girl Name">
+<input id="gdob" type="date">
+<input id="gtob" type="time">
+<input id="gplace" placeholder="Girl Birth Place">
+
+<button onclick="matchKundali()">Match Kundali & Open Jyotish AI</button>
+<p id="mstatus"></p>
 </div>
 
 </section>
 
-<footer>
-© 2026 Somnath Kurmi – Classical Vedic Jyotish
-</footer>
-
 <script>
-async function generateKundali(){
+async function geo(place){
+  const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(place));
+  const d=await r.json();
+  return {lat:d[0].lat, lon:d[0].lon};
+}
 
-  const name=document.getElementById("name").value;
+async function singleKundali(){
+  const name=nameEl.value=document.getElementById("name").value;
+  const sex=document.getElementById("sex").value;
   const dob=document.getElementById("dob").value;
   const tob=document.getElementById("tob").value;
   const place=document.getElementById("place").value;
-  const status=document.getElementById("status");
+  const s=document.getElementById("sstatus");
 
-  if(!name||!dob||!tob||!place){
-    alert("Please fill all details");
-    return;
+  if(!name||!sex||!dob||!tob||!place){alert("Fill all fields");return;}
+
+  s.innerHTML="Finding location…";
+  const g=await geo(place);
+
+  s.innerHTML="Calculating planets…";
+  const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
+  const d=await api.json();
+
+  let txt="Kundali\nName:"+name+"\nGender:"+sex+"\nDOB:"+dob+"\nTime:"+tob+"\nPlace:"+place+"\n\n";
+  for(let p in d){txt+=p+": "+d[p].rashi+" ("+d[p].nakshatra+")\n";}
+
+  window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
+}
+
+async function matchKundali(){
+  const bname=document.getElementById("bname").value;
+  const bdob=document.getElementById("bdob").value;
+  const btob=document.getElementById("btob").value;
+  const bplace=document.getElementById("bplace").value;
+
+  const gname=document.getElementById("gname").value;
+  const gdob=document.getElementById("gdob").value;
+  const gtob=document.getElementById("gtob").value;
+  const gplace=document.getElementById("gplace").value;
+
+  if(!bname||!bdob||!btob||!bplace||!gname||!gdob||!gtob||!gplace){
+    alert("Fill all matching details");return;
   }
 
-  status.innerHTML="Finding birthplace…";
+  const bs=await geo(bplace);
+  const gs=await geo(gplace);
 
-  // get latitude longitude from OpenStreetMap
-  const geo = await fetch("https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(place));
-  const geoData = await geo.json();
-  if(!geoData[0]){
-    alert("Place not found");
-    return;
-  }
-  const lat = geoData[0].lat;
-  const lon = geoData[0].lon;
+  const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bdob}&b_tob=${btob}&b_lat=${bs.lat}&b_lon=${bs.lon}&g_dob=${gdob}&g_tob=${gtob}&g_lat=${gs.lat}&g_lon=${gs.lon}`);
+  const d=await api.json();
 
-  status.innerHTML="Calculating planets using Swiss Ephemeris…";
+  let txt="Kundali Matching\n\nBoy:"+bname+"\nGirl:"+gname+"\n\nBoy Moon:"+d.boy.Moon.rashi+" "+d.boy.Moon.nakshatra+"\nGirl Moon:"+d.girl.Moon.rashi+" "+d.girl.Moon.nakshatra+"\n\nGuna Score:"+d.guna_score+"\nResult:"+d.result;
 
-  // call your real Kundali engine
-  const api = await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${lat}&lon=${lon}`);
-  const data = await api.json();
-
-  let text="Classical Vedic Kundali\n";
-  text+="Name: "+name+"\n";
-  text+="DOB: "+dob+"\nTime: "+tob+"\nPlace: "+place+"\n\n";
-
-  for(let p in data){
-    text+=p+": "+data[p].rashi+" ("+data[p].degree.toFixed(2)+"°)\n";
-  }
-
-  const url="https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(text);
-  window.open(url,"_blank");
+  window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
 }
 </script>
 
