@@ -9,20 +9,34 @@ import { getMahaDasha } from "./dasha/vimshottari.js";
 import { planetLongitude } from "./sky/planets.js";
 import { rahuKetu } from "./sky/nodes.js";
 
-async function start(){
+async function start() {
+
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
   const place = document.getElementById("place").value;
 
+  if (!date || !time || !place) {
+    alert("Fill all fields");
+    return;
+  }
+
   const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${place}`);
   const g = await geo.json();
 
+  if (!g.results || g.results.length === 0) {
+    alert("Place not found");
+    return;
+  }
+
+  const lat = g.results[0].latitude;
   const lon = g.results[0].longitude;
+  const timezone = g.results[0].timezone;
 
   const dt = new Date(date + "T" + time);
 
   const ayan = lahiriAyanamsa(dt);
 
+  // --- SUN & MOON ---
   const sunTrop = sunLongitude(dt);
   const moonTrop = moonLongitude(dt);
 
@@ -32,8 +46,11 @@ async function start(){
   const sunRashi = getRashi(sunSid);
   const moonRashi = getRashi(moonSid);
   const moonNak = getNakshatra(moonSid);
+
+  // --- DAYS FROM J2000 ---
   const d = (dt - new Date("2000-01-01T12:00:00Z")) / 86400000;
 
+  // --- PLANETS ---
   const mars = planetLongitude("Mars", d);
   const mercury = planetLongitude("Mercury", d);
   const venus = planetLongitude("Venus", d);
@@ -50,26 +67,32 @@ async function start(){
   const rahuSid = (nodes.rahu - ayan + 360) % 360;
   const ketuSid = (nodes.ketu - ayan + 360) % 360;
 
-
-  const tsm = trueSolarTime(dt, lon, g.results[0].timezone);
+  // --- LAGNA ---
+  const tsm = trueSolarTime(dt, lon, timezone);
   const lagnaDeg = calculateLagna(tsm);
+
+  // --- DASHA ---
   const dasha = getMahaDasha(moonSid);
 
+  // --- OUTPUT ---
   document.getElementById("output").textContent =
+    "Latitude: " + lat + "\n" +
+    "Longitude: " + lon + "\n\n" +
+
+    "Lagna: " + lagnaDeg.toFixed(2) + "°\n\n" +
+
     "Sun: " + sunSid.toFixed(2) + "° " + sunRashi + "\n" +
     "Moon: " + moonSid.toFixed(2) + "° " + moonRashi + "\n" +
-    "Moon Nakshatra: " + moonNak + "\n" +
-    "Maha Dasha Lord: " + dasha.lord + "\n" +
-    "Remaining Years: " + dasha.remainingYears + "\n" +
-    "Lagna: " + lagnaDeg.toFixed(2);
-    "Sun: " + sunSid.toFixed(2) + " " + getRashi(sunSid) + "\n" +
-    "Moon: " + moonSid.toFixed(2) + " " + getRashi(moonSid) + "\n" +
-    "Mars: " + marsSid.toFixed(2) + " " + getRashi(marsSid) + "\n" +
-    "Mercury: " + mercurySid.toFixed(2) + " " + getRashi(mercurySid) + "\n" +
-    "Jupiter: " + jupiterSid.toFixed(2) + " " + getRashi(jupiterSid) + "\n" +
-    "Venus: " + venusSid.toFixed(2) + " " + getRashi(venusSid) + "\n" +
-    "Saturn: " + saturnSid.toFixed(2) + " " + getRashi(saturnSid) + "\n" +
-    "Rahu: " + rahuSid.toFixed(2) + " " + getRashi(rahuSid) + "\n" +
-    "Ketu: " + ketuSid.toFixed(2) + " " + getRashi(ketuSid);
+    "Moon Nakshatra: " + moonNak + "\n\n" +
 
+    "Mars: " + marsSid.toFixed(2) + "° " + getRashi(marsSid) + "\n" +
+    "Mercury: " + mercurySid.toFixed(2) + "° " + getRashi(mercurySid) + "\n" +
+    "Jupiter: " + jupiterSid.toFixed(2) + "° " + getRashi(jupiterSid) + "\n" +
+    "Venus: " + venusSid.toFixed(2) + "° " + getRashi(venusSid) + "\n" +
+    "Saturn: " + saturnSid.toFixed(2) + "° " + getRashi(saturnSid) + "\n" +
+    "Rahu: " + rahuSid.toFixed(2) + "° " + getRashi(rahuSid) + "\n" +
+    "Ketu: " + ketuSid.toFixed(2) + "° " + getRashi(ketuSid) + "\n\n" +
+
+    "Maha Dasha Lord: " + dasha.lord + "\n" +
+    "Remaining Years: " + dasha.remainingYears;
 }
