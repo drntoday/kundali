@@ -1,266 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Somnath Kurmi – Vedic Kundali & Matching</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="logo.png">
-
-<style>
-body{font-family:Segoe UI;background:#fff7e6;margin:0;color:#4b2e05}
-header{background:linear-gradient(135deg,#ffb300,#ff6f00);color:white;text-align:center;padding:30px}
-header img{width:120px}
-section{max-width:1100px;margin:auto;padding:30px}
-.box{background:white;padding:25px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.1);margin-bottom:30px}
-input,select,button{width:100%;padding:12px;margin-top:10px;border-radius:6px;border:1px solid #ccc}
-button{background:#ff9800;color:white;font-size:18px;border:none;cursor:pointer}
-button:hover{background:#e68900}
-.suggest{background:white;border:1px solid #ccc;max-height:150px;overflow:auto;position:absolute;z-index:10}
-.suggest div{padding:8px;cursor:pointer}
-.suggest div:hover{background:#ffe0b2}
-.field{position:relative}
-</style>
+  <title>Kundali Engine</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>
-<img src="logo.png">
-<h1>Somnath Kurmi’s Classical Vedic Jyotish</h1>
-<p>Kundali • Matching • Shastra-Verified</p>
-</header>
+<h1>Vedic Kundali Engine</h1>
 
-<section>
+<div>
+  <label>Date:</label>
+  <input id="date" type="date">
 
-<!-- ================= SINGLE KUNDALI ================= -->
-<div class="box">
-<h2>Generate Your Kundali</h2>
+  <label>Time:</label>
+  <input id="time" type="time">
 
-<input id="name" placeholder="Full Name">
-<select id="sex">
-  <option value="">Gender</option>
-  <option>Male</option>
-  <option>Female</option>
-</select>
+  <label>Place:</label>
+  <input id="place" type="text" placeholder="City, Country">
 
-<input id="dob" type="date">
-<input id="tob" type="time">
-
-<label><b>Where was the birth time written?</b></label>
-<select id="tzmode">
-  <option value="">Select one</option>
-  <option value="india">Born in India (Indian Time)</option>
-  <option value="nri">Born outside India (Foreign Time)</option>
-</select>
-
-<div class="field">
-<input id="place" placeholder="Place of Birth" oninput="suggestPlace(this,'sp')">
-<div id="sp" class="suggest"></div>
+  <button onclick="start()">Generate Kundali</button>
 </div>
 
-<button onclick="singleKundali()">Generate Kundali</button>
-</div>
+<pre id="output"></pre>
 
-<!-- ================= MATCHING ================= -->
-<div class="box">
-<h2>Kundali Matching</h2>
-
-<h3>Boy</h3>
-<input id="bname" placeholder="Boy Name">
-<input id="bdob" type="date">
-<input id="btob" type="time">
-
-<select id="btz">
-  <option value="">Where was his birth time written?</option>
-  <option value="india">Born in India</option>
-  <option value="nri">Born outside India</option>
-</select>
-
-<div class="field">
-<input id="bplace" placeholder="Boy Place" oninput="suggestPlace(this,'bp')">
-<div id="bp" class="suggest"></div>
-</div>
-
-<h3>Girl</h3>
-<input id="gname" placeholder="Girl Name">
-<input id="gdob" type="date">
-<input id="gtob" type="time">
-
-<select id="gtz">
-  <option value="">Where was her birth time written?</option>
-  <option value="india">Born in India</option>
-  <option value="nri">Born outside India</option>
-</select>
-
-<div class="field">
-<input id="gplace" placeholder="Girl Place" oninput="suggestPlace(this,'gp')">
-<div id="gp" class="suggest"></div>
-</div>
-
-<button onclick="matchKundali()">Match Kundali</button>
-</div>
-
-</section>
-
-<script>
-let places={};
-
-// ---------- Place search ----------
-async function suggestPlace(input,id){
- if(input.value.length<3) return;
- const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&q="+input.value);
- const d=await r.json();
- const box=document.getElementById(id);
- box.innerHTML="";
- d.forEach(p=>{
-  const div=document.createElement("div");
-  div.innerText=p.display_name;
-  div.onclick=()=>{
-    input.value=p.display_name;
-    places[input.id]={lat:parseFloat(p.lat),lon:parseFloat(p.lon)};
-    box.innerHTML="";
-  };
-  box.appendChild(div);
- });
-}
-
-// ---------- Time conversion ----------
-function getUTC(dob,tob,mode){
- const [y,m,d]=dob.split("-");
- const [hh,mm]=tob.split(":");
- let dt=new Date(y,m-1,d,hh,mm);
-
- if(mode==="india"){
-   dt.setHours(dt.getHours()-5);
-   dt.setMinutes(dt.getMinutes()-30);
- }
- else if(mode==="nri"){
-   dt=new Date(dt.toISOString());
- }
- else{
-   alert("Please select where birth time was written");
-   throw "";
- }
-
- return {
-   date:dt.toISOString().slice(0,10),
-   time:dt.toISOString().slice(11,16)
- };
-}
-
-// ---------- Single Kundali ----------
-async function singleKundali(){
- const name=document.getElementById("name").value;
- const sex=document.getElementById("sex").value;
- const dob=document.getElementById("dob").value;
- const tob=document.getElementById("tob").value;
- const tz=document.getElementById("tzmode").value;
- const place=document.getElementById("place").value;
- const g=places["place"];
-
- if(!name||!sex||!dob||!tob||!tz||!g){
-   alert("Fill all details");
-   return;
- }
-
- const utc=getUTC(dob,tob,tz);
-
- const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${utc.date}&tob=${utc.time}&lat=${g.lat}&lon=${g.lon}`);
- const d=await api.json();
-
- let txt = `ASTRONOMICAL KUNDALI
-Ephemeris: Swiss Ephemeris
-Ayanamsha: Lahiri
-
-Birth:
-Name: ${name}
-Gender: ${sex}
-DOB: ${dob}
-Time: ${tob}
-Place: ${place}
-Latitude: ${g.lat}
-Longitude: ${g.lon}
-
-Astronomy:
-Julian Day: ${d.astronomy.jd}
-Ayanamsha: ${d.astronomy.ayanamsha}
-
-Lagna:
-Degree: ${d.lagna.degree}
-Rashi: ${d.lagna.rashi}
-Nakshatra: ${d.lagna.nakshatra}
-Pada: ${d.lagna.pada}
-
-Moon Seed (Vimshottari):
-Nakshatra Index: ${d.moon_seed.nakshatra_index}
-Balance Fraction: ${d.moon_seed.balance_fraction}
-
-PLANETS
-`;
-
- for(let p in d.planets){
-   const P = d.planets[p];
-   txt += `
-${p}:
- Degree: ${P.degree}
- Rashi: ${P.rashi}
- Nakshatra: ${P.nakshatra}
- Pada: ${P.pada}
- Speed: ${P.speed}
- Retrograde: ${P.retrograde}
-`;
- }
-
- window.open(
-  "https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt=" 
-  + encodeURIComponent(txt),
-  "_blank"
- );
-}
-
-// ---------- Matching ----------
-async function matchKundali(){
- const b=places["bplace"];
- const g=places["gplace"];
-
- if(!b||!g||!bdob.value||!btob.value||!gdob.value||!gtob.value||!btz.value||!gtz.value){
-   alert("Fill all matching details");
-   return;
- }
-
- const bu=getUTC(bdob.value,btob.value,btz.value);
- const gu=getUTC(gdob.value,gtob.value,gtz.value);
-
- const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bu.date}&b_tob=${bu.time}&b_lat=${b.lat}&b_lon=${b.lon}&g_dob=${gu.date}&g_tob=${gu.time}&g_lat=${g.lat}&g_lon=${g.lon}`);
- const d=await api.json();
-
- let txt = `VIVĀHA KUNDALI MATCHING
-Ephemeris: Swiss Ephemeris
-Ayanamsha: Lahiri
-
-BOY CHART
-Moon: ${d.boy.Moon.nakshatra}
-Rashi: ${d.boy.Moon.rashi}
-
-GIRL CHART
-Moon: ${d.girl.Moon.nakshatra}
-Rashi: ${d.girl.Moon.rashi}
-
-Ashta Koota:
-Guna Score: ${d.guna_score} / 36
-Result: ${d.result}
-
-Please evaluate full Vivaha compatibility using classical Shastra rules.
-`;
-
- window.open(
-  "https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="
-  + encodeURIComponent(txt),
-  "_blank"
- );
-}
-
-</script>
+<script src="main.js"></script>
 
 </body>
 </html>
+
