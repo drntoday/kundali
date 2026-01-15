@@ -100,7 +100,7 @@ async function getUTC(dob, tob, lat, lon){
   const [y,m,d] = dob.split("-");
   const [hh,mm] = tob.split(":");
 
-  const tz = await fetch(`https://secure.geonames.org/timezoneJSON?lat=${lat}&lng=${lon}&username=demo`);
+  const tz = await fetch(`https://secure.geonames.org/timezoneJSON?lat=${lat}&lng=${lon}&username=drn.today`);
   const tzdata = await tz.json();
 
   const offset = tzdata.gmtOffset; // includes DST
