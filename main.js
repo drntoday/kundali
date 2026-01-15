@@ -116,4 +116,5 @@ async function start() {
 
     "--- North Indian Chart ---\n" +
     chartText;
+ }
 
