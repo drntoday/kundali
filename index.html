@@ -87,7 +87,7 @@ async function suggestPlace(input,id){
   div.innerText=p.display_name;
   div.onclick=()=>{
     input.value=p.display_name;
-    places[input.id]={lat:p.lat,lon:p.lon};
+    places[input.id]={lat:parseFloat(p.lat),lon:parseFloat(p.lon)};
     box.innerHTML="";
   }
   box.appendChild(div);
@@ -95,6 +95,25 @@ async function suggestPlace(input,id){
 }
 
 function fmt(x){ return Number(x).toFixed(5); }
+
+async function getUTC(dob, tob, lat, lon){
+  const [y,m,d] = dob.split("-");
+  const [hh,mm] = tob.split(":");
+
+  const tz = await fetch(`https://secure.geonames.org/timezoneJSON?lat=${lat}&lng=${lon}&username=demo`);
+  const tzdata = await tz.json();
+
+  const offset = tzdata.gmtOffset; // includes DST
+  let local = new Date(Date.UTC(y, m-1, d, hh, mm));
+  local.setHours(local.getHours() - offset);
+
+  return {
+    date: local.toISOString().slice(0,10),
+    time: local.toISOString().slice(11,16),
+    offset: offset,
+    timezone: tzdata.timezoneId
+  };
+}
 
 async function singleKundali(){
  const name=document.getElementById("name").value;
@@ -106,7 +125,9 @@ async function singleKundali(){
 
  if(!name||!sex||!dob||!tob||!g){ alert("Fill all details"); return; }
 
- const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${dob}&tob=${tob}&lat=${g.lat}&lon=${g.lon}`);
+ const utc = await getUTC(dob, tob, g.lat, g.lon);
+
+ const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${utc.date}&tob=${utc.time}&lat=${g.lat}&lon=${g.lon}`);
  const d=await api.json();
 
  let txt = 
@@ -117,8 +138,11 @@ Ayanamsha: Lahiri
 Birth:
 Name: ${name}
 Gender: ${sex}
-DOB: ${dob}
-Time: ${tob}
+Local DOB: ${dob}
+Local Time: ${tob}
+Timezone: ${utc.timezone} (UTC ${utc.offset})
+UTC DOB: ${utc.date}
+UTC Time: ${utc.time}
 Place: ${place}
 Latitude: ${g.lat}
 Longitude: ${g.lon}
