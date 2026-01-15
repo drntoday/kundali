@@ -111,4 +111,5 @@ async function start() {
     console.error(e);
   }
 }
-window.start = start;
+document.getElementById("generate").addEventListener("click", start);
+
