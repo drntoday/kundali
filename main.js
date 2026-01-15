@@ -1,5 +1,8 @@
 import { trueSolarTime } from "./time/trueSolarTime.js";
 import { calculateLagna } from "./time/lagna.js";
+import { lahiriAyanamsa } from "./zodiac/ayanamsa.js";
+import { getRashi } from "./zodiac/rashi.js";
+import { getNakshatra } from "./zodiac/nakshatra.js";
 
 async function start(){
   const date = document.getElementById("date").value;
@@ -16,11 +19,18 @@ async function start(){
   const dt = new Date(date + "T" + time);
 
   const tsm = trueSolarTime(dt, lon, tz);
-  const lagna = calculateLagna(tsm);
+  const tropicalLagna = calculateLagna(tsm);
+
+  const ayan = lahiriAyanamsa(dt);
+  const siderealLagna = (tropicalLagna - ayan + 360) % 360;
+
+  const rashi = getRashi(siderealLagna);
+  const nak = getNakshatra(siderealLagna);
 
   document.getElementById("output").textContent =
     "Latitude: " + lat + "\n" +
     "Longitude: " + lon + "\n" +
-    "True Solar Minutes: " + tsm.toFixed(2) + "\n" +
-    "Lagna Degree: " + lagna.toFixed(2);
+    "Lagna (Sidereal): " + siderealLagna.toFixed(2) + "\n" +
+    "Rashi: " + rashi + "\n" +
+    "Nakshatra: " + nak;
 }
