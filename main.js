@@ -11,8 +11,6 @@ import { rahuKetu } from "./sky/nodes.js";
 import { buildNorthChart } from "./charts/north.js";
 import { drawNorthChart } from "./charts/drawNorth.js";
 
-window.start = start; // expose to HTML button
-
 async function start() {
   try {
     const date = document.getElementById("date").value;
@@ -113,3 +111,4 @@ async function start() {
     console.error(e);
   }
 }
+window.start = start;
