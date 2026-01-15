@@ -104,7 +104,8 @@ async function getUTC(dob, tob, lat, lon){
   const tzdata = await tz.json();
 
   const offset = tzdata.gmtOffset; // includes DST
-  let local = new Date(Date.UTC(y, m-1, d, hh, mm));
+
+  let local = new Date(y, m-1, d, hh, mm);
   local.setHours(local.getHours() - offset);
 
   return {
