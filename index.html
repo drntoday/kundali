@@ -159,7 +159,8 @@ async function singleKundali(){
  const g=places["place"];
 
  if(!name||!sex||!dob||!tob||!tz||!g){
-   alert("Fill all details"); return;
+   alert("Fill all details");
+   return;
  }
 
  const utc=getUTC(dob,tob,tz);
@@ -167,13 +168,54 @@ async function singleKundali(){
  const api=await fetch(`https://kundali-engine.onrender.com/kundali?dob=${utc.date}&tob=${utc.time}&lat=${g.lat}&lon=${g.lon}`);
  const d=await api.json();
 
- let txt=`Name:${name}\nGender:${sex}\nDOB:${dob}\nTime:${tob}\nPlace:${place}\n\n`;
+ let txt = `ASTRONOMICAL KUNDALI
+Ephemeris: Swiss Ephemeris
+Ayanamsha: Lahiri
+
+Birth:
+Name: ${name}
+Gender: ${sex}
+DOB: ${dob}
+Time: ${tob}
+Place: ${place}
+Latitude: ${g.lat}
+Longitude: ${g.lon}
+
+Astronomy:
+Julian Day: ${d.astronomy.jd}
+Ayanamsha: ${d.astronomy.ayanamsha}
+
+Lagna:
+Degree: ${d.lagna.degree}
+Rashi: ${d.lagna.rashi}
+Nakshatra: ${d.lagna.nakshatra}
+Pada: ${d.lagna.pada}
+
+Moon Seed (Vimshottari):
+Nakshatra Index: ${d.moon_seed.nakshatra_index}
+Balance Fraction: ${d.moon_seed.balance_fraction}
+
+PLANETS
+`;
 
  for(let p in d.planets){
-   txt+=`${p}: ${d.planets[p].rashi} ${d.planets[p].nakshatra}\n`;
+   const P = d.planets[p];
+   txt += `
+${p}:
+ Degree: ${P.degree}
+ Rashi: ${P.rashi}
+ Nakshatra: ${P.nakshatra}
+ Pada: ${P.pada}
+ Speed: ${P.speed}
+ Retrograde: ${P.retrograde}
+`;
  }
 
- window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
+ window.open(
+  "https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt=" 
+  + encodeURIComponent(txt),
+  "_blank"
+ );
 }
 
 // ---------- Matching ----------
@@ -182,7 +224,8 @@ async function matchKundali(){
  const g=places["gplace"];
 
  if(!b||!g||!bdob.value||!btob.value||!gdob.value||!gtob.value||!btz.value||!gtz.value){
-   alert("Fill all matching details"); return;
+   alert("Fill all matching details");
+   return;
  }
 
  const bu=getUTC(bdob.value,btob.value,btz.value);
@@ -191,10 +234,32 @@ async function matchKundali(){
  const api=await fetch(`https://kundali-engine.onrender.com/match?b_dob=${bu.date}&b_tob=${bu.time}&b_lat=${b.lat}&b_lon=${b.lon}&g_dob=${gu.date}&g_tob=${gu.time}&g_lat=${g.lat}&g_lon=${g.lon}`);
  const d=await api.json();
 
- let txt=`Boy Moon:${d.boy.Moon.nakshatra}\nGirl Moon:${d.girl.Moon.nakshatra}\nGuna:${d.guna_score}\nResult:${d.result}`;
+ let txt = `VIVĀHA KUNDALI MATCHING
+Ephemeris: Swiss Ephemeris
+Ayanamsha: Lahiri
 
- window.open("https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="+encodeURIComponent(txt),"_blank");
+BOY CHART
+Moon: ${d.boy.Moon.nakshatra}
+Rashi: ${d.boy.Moon.rashi}
+
+GIRL CHART
+Moon: ${d.girl.Moon.nakshatra}
+Rashi: ${d.girl.Moon.rashi}
+
+Ashta Koota:
+Guna Score: ${d.guna_score} / 36
+Result: ${d.result}
+
+Please evaluate full Vivaha compatibility using classical Shastra rules.
+`;
+
+ window.open(
+  "https://chatgpt.com/g/g-6964d5788f108191886888ded114bdf3-classical-vedic-jyotish-ai?prompt="
+  + encodeURIComponent(txt),
+  "_blank"
+ );
 }
+
 </script>
 
 </body>
