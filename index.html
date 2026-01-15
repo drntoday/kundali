@@ -46,7 +46,7 @@ button:hover{background:#e68900}
 <input id="dob" type="date">
 <input id="tob" type="time">
 
-<label><b>Where was this birth time written?</b></label>
+<label><b>Where was the birth time written?</b></label>
 <select id="tzmode">
   <option value="">Select one</option>
   <option value="india">Born in India (Indian Time)</option>
@@ -61,8 +61,7 @@ button:hover{background:#e68900}
 <button onclick="singleKundali()">Generate Kundali</button>
 </div>
 
-
-<!-- ================= KUNDALI MATCHING ================= -->
+<!-- ================= MATCHING ================= -->
 <div class="box">
 <h2>Kundali Matching</h2>
 
@@ -151,15 +150,17 @@ function getUTC(dob,tob,mode){
 
 // ---------- Single Kundali ----------
 async function singleKundali(){
- const name=nameEl.value;
- const sex=sexEl.value;
- const dob=dobEl.value;
- const tob=tobEl.value;
- const tz=tzmode.value;
- const place=placeEl.value;
+ const name=document.getElementById("name").value;
+ const sex=document.getElementById("sex").value;
+ const dob=document.getElementById("dob").value;
+ const tob=document.getElementById("tob").value;
+ const tz=document.getElementById("tzmode").value;
+ const place=document.getElementById("place").value;
  const g=places["place"];
 
- if(!name||!sex||!dob||!tob||!tz||!g){alert("Fill all details");return;}
+ if(!name||!sex||!dob||!tob||!tz||!g){
+   alert("Fill all details"); return;
+ }
 
  const utc=getUTC(dob,tob,tz);
 
@@ -167,6 +168,7 @@ async function singleKundali(){
  const d=await api.json();
 
  let txt=`Name:${name}\nGender:${sex}\nDOB:${dob}\nTime:${tob}\nPlace:${place}\n\n`;
+
  for(let p in d.planets){
    txt+=`${p}: ${d.planets[p].rashi} ${d.planets[p].nakshatra}\n`;
  }
@@ -176,9 +178,11 @@ async function singleKundali(){
 
 // ---------- Matching ----------
 async function matchKundali(){
- const b=places["bplace"], g=places["gplace"];
+ const b=places["bplace"];
+ const g=places["gplace"];
+
  if(!b||!g||!bdob.value||!btob.value||!gdob.value||!gtob.value||!btz.value||!gtz.value){
-   alert("Fill all matching details");return;
+   alert("Fill all matching details"); return;
  }
 
  const bu=getUTC(bdob.value,btob.value,btz.value);
