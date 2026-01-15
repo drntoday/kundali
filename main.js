@@ -61,8 +61,7 @@ async function start() {
     const ketuSid = (nodes.ketu - ayan + 360) % 360;
 
     // Lagna
-    const tsm = trueSolarTime(dt, lon, timezone);
-    const lagnaDeg = calculateLagna(tsm);
+    const lagnaDeg = calculateLagna(dt, lat, lon);
 
     // Dasha
     const dasha = getMahaDasha(moonSid);
