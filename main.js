@@ -1,13 +1,14 @@
-import { sunLongitude } from "./sky/sun.js";
-import { moonLongitude } from "./sky/moon.js";
+
 import { lahiriAyanamsa } from "./zodiac/ayanamsa.js";
 import { getRashi } from "./zodiac/rashi.js";
 import { getNakshatra } from "./zodiac/nakshatra.js";
 import { trueSolarTime } from "./time/trueSolarTime.js";
-import { calculateLagna } from "./time/lagna.js";
+import { sunLongitude } from "./astro/vsop87.js";
+import { moonLongitude } from "./astro/elp2000.js";
+import { trueNode } from "./astro/nodes.js";
+import { ascendant } from "./astro/ascendant.js";
+import { lahiriAyanamsa } from "./astro/ayanamsa.js";
 import { getMahaDasha } from "./dasha/vimshottari.js";
-import { planetLongitude } from "./sky/planets.js";
-import { rahuKetu } from "./sky/nodes.js";
 import { buildNorthChart } from "./charts/north.js";
 import { drawNorthChart } from "./charts/drawNorth.js";
 
@@ -36,11 +37,17 @@ async function start() {
 
     const dt = new Date(date + "T" + time);
 
-    const ayan = lahiriAyanamsa(dt);
+    const jd = (dt / 86400000) + 2440587.5;
 
-    // Sun & Moon
-    const sunSid = (sunLongitude(dt) - ayan + 360) % 360;
-    const moonSid = (moonLongitude(dt) - ayan + 360) % 360;
+    const ayan = lahiriAyanamsa(jd);
+
+    const sunSid = (sunLongitude(jd) - ayan + 360) % 360;
+    const moonSid = (moonLongitude(jd) - ayan + 360) % 360;
+
+    const rahuSid = (trueNode(jd) - ayan + 360) % 360;
+    const ketuSid = (rahuSid + 180) % 360;
+
+    const lagnaDeg = (ascendant(jd, lat, lon) - ayan + 360) % 360;
 
     const sunRashi = getRashi(sunSid);
     const moonRashi = getRashi(moonSid);
@@ -57,11 +64,6 @@ async function start() {
     const saturnSid = (planetLongitude("Saturn", d) - ayan + 360) % 360;
 
     const nodes = rahuKetu(d);
-    const rahuSid = (nodes.rahu - ayan + 360) % 360;
-    const ketuSid = (nodes.ketu - ayan + 360) % 360;
-
-    // Lagna
-    const lagnaDeg = calculateLagna(dt, lat, lon);
 
     // Dasha
     const dasha = getMahaDasha(moonSid);
