@@ -6,6 +6,8 @@ import { getNakshatra } from "./zodiac/nakshatra.js";
 import { trueSolarTime } from "./time/trueSolarTime.js";
 import { calculateLagna } from "./time/lagna.js";
 import { getMahaDasha } from "./dasha/vimshottari.js";
+import { planetLongitude } from "./sky/planets.js";
+import { rahuKetu } from "./sky/nodes.js";
 
 async function start(){
   const date = document.getElementById("date").value;
@@ -30,6 +32,24 @@ async function start(){
   const sunRashi = getRashi(sunSid);
   const moonRashi = getRashi(moonSid);
   const moonNak = getNakshatra(moonSid);
+  const d = (dt - new Date("2000-01-01T12:00:00Z")) / 86400000;
+
+  const mars = planetLongitude("Mars", d);
+  const mercury = planetLongitude("Mercury", d);
+  const venus = planetLongitude("Venus", d);
+  const jupiter = planetLongitude("Jupiter", d);
+  const saturn = planetLongitude("Saturn", d);
+
+  const nodes = rahuKetu(d);
+
+  const marsSid = (mars - ayan + 360) % 360;
+  const mercurySid = (mercury - ayan + 360) % 360;
+  const venusSid = (venus - ayan + 360) % 360;
+  const jupiterSid = (jupiter - ayan + 360) % 360;
+  const saturnSid = (saturn - ayan + 360) % 360;
+  const rahuSid = (nodes.rahu - ayan + 360) % 360;
+  const ketuSid = (nodes.ketu - ayan + 360) % 360;
+
 
   const tsm = trueSolarTime(dt, lon, g.results[0].timezone);
   const lagnaDeg = calculateLagna(tsm);
@@ -42,4 +62,14 @@ async function start(){
     "Maha Dasha Lord: " + dasha.lord + "\n" +
     "Remaining Years: " + dasha.remainingYears + "\n" +
     "Lagna: " + lagnaDeg.toFixed(2);
+    "Sun: " + sunSid.toFixed(2) + " " + getRashi(sunSid) + "\n" +
+    "Moon: " + moonSid.toFixed(2) + " " + getRashi(moonSid) + "\n" +
+    "Mars: " + marsSid.toFixed(2) + " " + getRashi(marsSid) + "\n" +
+    "Mercury: " + mercurySid.toFixed(2) + " " + getRashi(mercurySid) + "\n" +
+    "Jupiter: " + jupiterSid.toFixed(2) + " " + getRashi(jupiterSid) + "\n" +
+    "Venus: " + venusSid.toFixed(2) + " " + getRashi(venusSid) + "\n" +
+    "Saturn: " + saturnSid.toFixed(2) + " " + getRashi(saturnSid) + "\n" +
+    "Rahu: " + rahuSid.toFixed(2) + " " + getRashi(rahuSid) + "\n" +
+    "Ketu: " + ketuSid.toFixed(2) + " " + getRashi(ketuSid);
+
 }
