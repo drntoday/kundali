@@ -8,6 +8,8 @@ import { calculateLagna } from "./time/lagna.js";
 import { getMahaDasha } from "./dasha/vimshottari.js";
 import { planetLongitude } from "./sky/planets.js";
 import { rahuKetu } from "./sky/nodes.js";
+import { buildNorthChart } from "./charts/north.js";
+import { drawNorthChart } from "./charts/drawNorth.js";
 
 async function start() {
 
@@ -74,8 +76,25 @@ async function start() {
   // --- DASHA ---
   const dasha = getMahaDasha(moonSid);
 
+  //////
+  const planets = {
+    Sun: sunSid,
+    Moon: moonSid,
+    Mars: marsSid,
+    Mercury: mercurySid,
+    Jupiter: jupiterSid,
+    Venus: venusSid,
+    Saturn: saturnSid,
+    Rahu: rahuSid,
+    Ketu: ketuSid
+  };
+
+  const chart = buildNorthChart(lagnaDeg, planets);
+  const chartText = drawNorthChart(chart);
+
   // --- OUTPUT ---
-  document.getElementById("output").textContent =
+  document.getElementById("output").textContent +=
+    "\n\n--- North Indian Chart ---\n" + chartText;
     "Latitude: " + lat + "\n" +
     "Longitude: " + lon + "\n\n" +
 
