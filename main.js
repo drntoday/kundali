@@ -93,8 +93,7 @@ async function start() {
   const chartText = drawNorthChart(chart);
 
   // --- OUTPUT ---
-  document.getElementById("output").textContent +=
-    "\n\n--- North Indian Chart ---\n" + chartText;
+  document.getElementById("output").textContent =
     "Latitude: " + lat + "\n" +
     "Longitude: " + lon + "\n\n" +
 
@@ -113,5 +112,8 @@ async function start() {
     "Ketu: " + ketuSid.toFixed(2) + "° " + getRashi(ketuSid) + "\n\n" +
 
     "Maha Dasha Lord: " + dasha.lord + "\n" +
-    "Remaining Years: " + dasha.remainingYears;
-}
+    "Remaining Years: " + dasha.remainingYears + "\n\n" +
+
+    "--- North Indian Chart ---\n" +
+    chartText;
+
